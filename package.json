@@ -2,8 +2,7 @@
   "name": "chat-cord",
   "version": "1.0.0",
   "main": "server.js",
-  "proxy": "http://localhost:5000", 
-
+  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "nodemon backend/server.js"
   },
@@ -27,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1"
   }
 }
