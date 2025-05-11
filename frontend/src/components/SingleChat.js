@@ -18,13 +18,8 @@ import io from "socket.io-client";
 import  Lottie  from 'react-lottie'; 
 import animationData from "./animations/typing.json";
 
-
-
 const ENDPOINT = "http://localhost:5000"; 
-
-
 var socket, selectedChatCompare; 
-
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -46,9 +41,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const fetchMessages = async () => {
     if (!selectedChat || !user?.token) return;
-  
-    setLoading(true); // Start loading immediately
-  
+    setLoading(true);
+
     try {
       const config = {
         headers: {
@@ -56,14 +50,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-  
+
       const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
-  
-      setMessages(data); // Update messages state
-      socket.emit("join chat", selectedChat._id); // Join chat room via socket
+      setMessages(data);
+      socket.emit("join chat", selectedChat._id);
     } catch (error) {
-      console.error("Error fetching messages:", error?.response || error);
-  
       toast({
         title: "Error Occurred!",
         description: error?.response?.data?.message || "Failed to load the messages.",
@@ -73,48 +64,36 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: "bottom",
       });
     } finally {
-      setLoading(false); // Always stop loading, even on failure
+      setLoading(false);
     }
   };
-  
-        
-    useEffect(() => {
-        socket = io(ENDPOINT);
 
-        socket.emit("setup", user); 
-        socket.on('connected', () => setSocketConnected(true)); 
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, []);
 
-        socket.on('typing', () => setIsTyping(true));
-        socket.on('stop typing', () => setIsTyping(false));
+  useEffect(() => {
+    fetchMessages();
+    selectedChatCompare = selectedChat;
+  }, [selectedChat]);
 
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+        // give notification
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });    
+  });
 
-
-    }, []); 
-
-    useEffect(() => {
-        
-        fetchMessages();
-        
-        selectedChatCompare = selectedChat; 
-
-    }, [selectedChat]);
-
-    useEffect(() => {
-        socket.on("message received", (newMessageReceived) => {
-            if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id)
-            {
-                // give notification
-            }
-
-            else {
-                setMessages([...messages, newMessageReceived]); 
-            }
-        });    
-    })
-  
   const sendMessage = async (event) => {
-      if (event.key === "Enter" && newMessage) {
-          socket.emit('stop typing', selectedChat._id); 
+    if (event.key === "Enter" && newMessage) {
+      socket.emit('stop typing', selectedChat._id); 
       try {
         const config = {
           headers: {
@@ -133,12 +112,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         );
 
         socket.emit("new message", data);
-        console.log(data);
         setNewMessage("");
         setMessages([...messages, data]);
       } catch (error) {
         toast({
-          title: "Error Occured!",
+          title: "Error Occurred!",
           description: "Failed to send the Message",
           status: "error",
           duration: 5000,
@@ -149,34 +127,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-
-
   const typingHandler = (e) => {
-      setNewMessage(e.target.value);
-      
-      if (!socketConnected) return; 
+    setNewMessage(e.target.value);
+    if (!socketConnected) return; 
 
-      if (!typing) {
-          setTyping(true);
-          socket.emit('typing', selectedChat._id); 
+    if (!typing) {
+      setTyping(true);
+      socket.emit('typing', selectedChat._id); 
+    }
+
+    let lastTypingTime = new Date().getTime();
+    const timerLength = 3000; 
+
+    setTimeout(() => {
+      const timeNow = new Date().getTime(); 
+      const timeDiff = timeNow - lastTypingTime; 
+
+      if (timeDiff >= timerLength && typing) {
+        socket.emit('stop typing', selectedChat._id); 
+        setTyping(false); 
       }
-
-      let lastTypingTime = new Date().getTime();
-
-      var timerLength = 3000; 
-
-      setTimeout(() => {
-          var timeNow = new Date().getTime(); 
-
-          var timeDiff = timeNow - lastTypingTime; 
-
-          if (timeDiff >= timerLength && typing)
-          {
-              socket.emit('stop typing', selectedChat._id); 
-              setTyping(false); 
-              }
-      }, timerLength);
+    }, timerLength);
   };
+
   return (
     <>
       {selectedChat ? (
@@ -234,15 +207,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-//Kirill's file sharing code
-              <div className="messages">
-                {messages.map((message, index) => {
-                  const isFile = message.content?.includes("cloudinary.com");
-                  const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
+              <>
+                {/* Kirill's file sharing code */}
+                <div className="file-messages">
+                  {messages.map((message, index) => {
+                    const isFile = message.content?.includes("cloudinary.com");
+                    const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
 
-                  return (
-                    <Box key={index} mb={2}>
-                      {isFile ? (
+                    return isFile ? (
+                      <Box key={`file-${index}`} mb={2}>
                         <a
                           href={message.content}
                           download={fileName}
@@ -251,24 +224,27 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         >
                           {fileName}
                         </a>
-                      ) : (
-                        <Text>{message.content}</Text>
-                      )}
-                    </Box>
-                  );
-                })}
-              </div>
+                      </Box>
+                    ) : null;
+                  })}
+                </div>
+
+                <div className="messages">
+                  <ScrollableChat messages={messages} />
+                </div>
+              </>
             )}
 
-                      <FormControl onKeyDown={sendMessage} isRequired mt={3}>
-                          {istyping ? <div>
-                              <Lottie
-                                  
-                                options={defaultOptions}
-                              width={70}
-                              style={{ marginBottom: 15, marginLeft: 0 }}
-                              />
-                          </div> : <></>}
+            <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {istyping ? (
+                <div>
+                  <Lottie
+                    options={defaultOptions}
+                    width={70}
+                    style={{ marginBottom: 15, marginLeft: 0 }}
+                  />
+                </div>
+              ) : null}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
@@ -277,6 +253,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 onChange={typingHandler}
               />
             </FormControl>
+
             {/*file upload*/}
             <FileUpload chatId={selectedChat._id} />
           </Box>
