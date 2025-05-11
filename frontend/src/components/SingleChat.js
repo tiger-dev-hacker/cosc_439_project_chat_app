@@ -10,7 +10,7 @@ import './styles.css';
 
 //Kirill's file sharing code
 /*file sharing*/
-// import FileUpload from "./ui/FileUpload";
+import FileUpload from "./ui/FileUpload";
 /*file sharing*/
 
 import ScrollableChat from "./ScrollableChat";
@@ -77,7 +77,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
   
-    
         
     useEffect(() => {
         socket = io(ENDPOINT);
@@ -112,7 +111,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         });    
     })
-    
+  
   const sendMessage = async (event) => {
       if (event.key === "Enter" && newMessage) {
           socket.emit('stop typing', selectedChat._id); 
@@ -236,34 +235,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
 //Kirill's file sharing code
-//               <div className="messages">
-//                 {messages.map((message, index) => {
-//                   const isFile = message.content?.includes("cloudinary.com");
-//                   const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
+              <div className="messages">
+                {messages.map((message, index) => {
+                  const isFile = message.content?.includes("cloudinary.com");
+                  const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
 
-//                   return (
-//                     <Box key={index} mb={2}>
-//                       {isFile ? (
-//                         <a
-//                           href={message.content}
-//                           download={fileName}
-//                           target="_blank"
-//                           rel="noopener noreferrer"
-//                         >
-//                           {fileName}
-//                         </a>
-//                       ) : (
-//                         <Text>{message.content}</Text>
-//                       )}
-//                     </Box>
-//                   );
-//                 })}
-//               </div>
-
-                <div className="messages">
-                <ScrollableChat messages={messages} />
-                </div>
-
+                  return (
+                    <Box key={index} mb={2}>
+                      {isFile ? (
+                        <a
+                          href={message.content}
+                          download={fileName}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {fileName}
+                        </a>
+                      ) : (
+                        <Text>{message.content}</Text>
+                      )}
+                    </Box>
+                  );
+                })}
+              </div>
             )}
 
                       <FormControl onKeyDown={sendMessage} isRequired mt={3}>
