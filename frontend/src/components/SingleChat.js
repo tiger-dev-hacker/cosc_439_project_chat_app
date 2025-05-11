@@ -208,29 +208,40 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <>
+                <div className="messages">
+                  <ScrollableChat messages={messages} />
+                </div>
                 {/* Kirill's file sharing code */}
-                <div className="file-messages">
+                <div className="file-messages" style={{ display: "flex", flexDirection: "column" }}>
                   {messages.map((message, index) => {
                     const isFile = message.content?.includes("cloudinary.com");
                     const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
 
+                    const isSender = message.sender?._id === user._id;
+
                     return isFile ? (
-                      <Box key={`file-${index}`} mb={2}>
+                      <Box
+                        key={`file-${index}`}
+                        alignSelf={isSender ? "flex-end" : "flex-start"}
+                        bg={isSender ? "#BEE3F8" : "#B9F5D0"}
+                        px={3}
+                        py={2}
+                        borderRadius="lg"
+                        maxW="75%"
+                        mb={1}
+                      >
                         <a
                           href={message.content}
                           download={fileName}
                           target="_blank"
                           rel="noopener noreferrer"
+                          style={{ color: "blue", textDecoration: "underline", wordBreak: "break-word" }}
                         >
                           {fileName}
                         </a>
                       </Box>
                     ) : null;
                   })}
-                </div>
-
-                <div className="messages">
-                  <ScrollableChat messages={messages} />
                 </div>
               </>
             )}
