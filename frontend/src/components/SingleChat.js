@@ -208,9 +208,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <>
-                <div className="messages">
-                  <ScrollableChat messages={messages} />
-                </div>
+    
                 {/* Kirill's file sharing code */}
                 <div className="file-messages" style={{ display: "flex", flexDirection: "column" }}>
                   {messages.map((message, index) => {
@@ -242,6 +240,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                       </Box>
                     ) : null;
                   })}
+                  </div>
+                  
+                  <div className="messages">
+                  <ScrollableChat messages={messages} />
                 </div>
               </>
             )}
