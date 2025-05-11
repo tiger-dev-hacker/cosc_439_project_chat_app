@@ -8,6 +8,10 @@ import ProfileModal from "./miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
 import './styles.css';
+/*file sharing*/
+import FileUpload from "./ui/FileUpload";
+/*file sharing*/
+
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -152,7 +156,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-              <div className="messages">{/* Messages */}</div>
+              <div className="messages">
+                {messages.map((message, index) => {
+                  const isFile = message.content?.includes("cloudinary.com");
+                  const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
+
+                  return (
+                    <Box key={index} mb={2}>
+                      {isFile ? (
+                        <a
+                          href={message.content}
+                          download={fileName}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {fileName}
+                        </a>
+                      ) : (
+                        <Text>{message.content}</Text>
+                      )}
+                    </Box>
+                  );
+                })}
+              </div>
             )}
 
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
@@ -164,6 +190,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 onChange={typingHandler}
               />
             </FormControl>
+            {/*file upload*/}
+            <FileUpload chatId={selectedChat._id} />
           </Box>
         </>
       ) : (
