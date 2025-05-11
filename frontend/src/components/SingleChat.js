@@ -7,6 +7,12 @@ import ProfileModal from "./miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
 import './styles.css';
+
+//Kirill's file sharing code
+/*file sharing*/
+// import FileUpload from "./ui/FileUpload";
+/*file sharing*/
+
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client"; 
 import  Lottie  from 'react-lottie'; 
@@ -18,6 +24,7 @@ const ENDPOINT = "http://localhost:5000";
 
 
 var socket, selectedChatCompare; 
+
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -228,9 +235,35 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
+//Kirill's file sharing code
+//               <div className="messages">
+//                 {messages.map((message, index) => {
+//                   const isFile = message.content?.includes("cloudinary.com");
+//                   const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
+
+//                   return (
+//                     <Box key={index} mb={2}>
+//                       {isFile ? (
+//                         <a
+//                           href={message.content}
+//                           download={fileName}
+//                           target="_blank"
+//                           rel="noopener noreferrer"
+//                         >
+//                           {fileName}
+//                         </a>
+//                       ) : (
+//                         <Text>{message.content}</Text>
+//                       )}
+//                     </Box>
+//                   );
+//                 })}
+//               </div>
+
                 <div className="messages">
                 <ScrollableChat messages={messages} />
                 </div>
+
             )}
 
                       <FormControl onKeyDown={sendMessage} isRequired mt={3}>
@@ -250,6 +283,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 onChange={typingHandler}
               />
             </FormControl>
+            {/*file upload*/}
+            <FileUpload chatId={selectedChat._id} />
           </Box>
         </>
       ) : (

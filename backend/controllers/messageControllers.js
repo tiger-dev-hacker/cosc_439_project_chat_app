@@ -2,6 +2,11 @@ const asyncHandler = require("express-async-handler");
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Chat = require("../models/chatModel");
+/*File sharing*/
+const path = require("path");
+const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+/*File sharing*/
 
 //@description     Get all Messages
 //@route           GET /api/Message/:chatId
@@ -33,6 +38,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     sender: req.user._id,
     content: content,
     chat: chatId,
+    filename: req.body.filename || undefined,
   };
 
   try {
@@ -57,4 +63,45 @@ const sendMessage = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { sendMessage, allMessages };
+/*File sharing WORKING*/
+const uploadDocument = asyncHandler(async (req, res) => {
+  console.log("upload document called");
+  try {
+    const file = req.file;
+
+    if (!file || !file.path) {
+      console.log("No file received:", file);
+      return res.status(400).json({ error: "Upload failed" });
+    }
+
+    console.log("Cloudinary Upload Success:", file);
+
+    const cloudinaryDownloadUrl = `https://res.cloudinary.com/${cloudinary.config().cloud_name}/raw/upload/fl_attachment/${file.filename}`;
+
+    res.status(200).json({
+      message: "File uploaded to Cloudinary",
+      fileUrl: cloudinaryDownloadUrl,
+      originalname: file.originalname,
+    });
+  } catch (err) {
+    console.error("Cloudinary Upload Error:", err);
+    res.status(500).json({ error: err.message || "Upload failed" });
+  }
+});
+/*File sharing WORKING*/
+
+const downloadDocument = asyncHandler(async (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, "..", "uploads", filename);
+  if (!fs.existsSync(filePath)) return res.status(404).send("File not found");
+  res.download(filePath, filename);
+});
+
+module.exports = {
+  sendMessage,
+  allMessages,
+  /*file sharing*/
+  uploadDocument,
+  downloadDocument,
+  /*file sharing*/
+};
