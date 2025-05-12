@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { Box, Button, FormControl, IconButton, Input, Spinner, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  Input,
+  Spinner,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
-import './styles.css';
+import "./styles.css";
 
 //Kirill's file sharing code
 /*file sharing*/
@@ -14,12 +23,12 @@ import FileUpload from "./ui/FileUpload";
 /*file sharing*/
 
 import ScrollableChat from "./ScrollableChat";
-import io from "socket.io-client"; 
-import  Lottie  from 'react-lottie'; 
+import io from "socket.io-client";
+import Lottie from "react-lottie";
 import animationData from "./animations/typing.json";
 
-const ENDPOINT = "http://localhost:5000"; 
-var socket, selectedChatCompare; 
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
@@ -51,13 +60,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         },
       };
 
-      const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
+      const { data } = await axios.get(
+        `/api/message/${selectedChat._id}`,
+        config
+      );
       setMessages(data);
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occurred!",
-        description: error?.response?.data?.message || "Failed to load the messages.",
+        description:
+          error?.response?.data?.message || "Failed to load the messages.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -83,17 +96,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   useEffect(() => {
     socket.on("message received", (newMessageReceived) => {
-      if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
         // give notification
       } else {
         setMessages([...messages, newMessageReceived]);
       }
-    });    
+    });
   });
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      socket.emit('stop typing', selectedChat._id); 
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -129,23 +145,23 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
-    if (!socketConnected) return; 
+    if (!socketConnected) return;
 
     if (!typing) {
       setTyping(true);
-      socket.emit('typing', selectedChat._id); 
+      socket.emit("typing", selectedChat._id);
     }
 
     let lastTypingTime = new Date().getTime();
-    const timerLength = 3000; 
+    const timerLength = 3000;
 
     setTimeout(() => {
-      const timeNow = new Date().getTime(); 
-      const timeDiff = timeNow - lastTypingTime; 
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
 
       if (timeDiff >= timerLength && typing) {
-        socket.emit('stop typing', selectedChat._id); 
-        setTyping(false); 
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
       }
     }, timerLength);
   };
@@ -208,12 +224,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             ) : (
               <>
-    
-                {/* Kirill's file sharing code */}
-                <div className="file-messages" style={{ display: "flex", flexDirection: "column" }}>
+                <div
+                  className="file-messages"
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
                   {messages.map((message, index) => {
                     const isFile = message.content?.includes("cloudinary.com");
-                    const fileName = message.filename || decodeURIComponent(message.content.split("/").pop());
+                    const fileName =
+                      message.filename ||
+                      decodeURIComponent(message.content.split("/").pop());
 
                     const isSender = message.sender?._id === user._id;
 
@@ -233,21 +252,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                           download={fileName}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: "blue", textDecoration: "underline", wordBreak: "break-word" }}
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                            wordBreak: "break-word",
+                          }}
                         >
                           {fileName}
                         </a>
                       </Box>
                     ) : null;
                   })}
-                  </div>
-                  
-                  <div className="messages">
+                </div>
+
+                <div className="messages">
                   <ScrollableChat messages={messages} />
                 </div>
               </>
             )}
-
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
               {istyping ? (
                 <div>
@@ -266,17 +288,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 onChange={typingHandler}
               />
             </FormControl>
-
-            <a href="http://localhost:7000/index.html" target="_blank" rel="noopener noreferrer">
-  <Button>
-    Send file
-              </Button>
-              </a>
-              <a href="http://localhost:7000/receiver.html" target="_blank" rel="noopener noreferrer">
-  <Button>
-    Receive File 
-              </Button>
-</a>            {/*file upload*/}
+            <a
+              href="http://localhost:7000/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button>Send file</Button>
+            </a>
+            <a
+              href="http://localhost:7000/receiver.html"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button>Receive File</Button>
+            </a>{" "}
+            {/*file upload*/}
           </Box>
         </>
       ) : (
