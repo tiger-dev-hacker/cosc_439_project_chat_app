@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { Box, FormControl, IconButton, Input, Spinner, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, FormControl, IconButton, Input, Spinner, Text, useToast } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "./miscellaneous/ProfileModal";
@@ -267,8 +267,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             </FormControl>
 
-            {/*file upload*/}
-            <FileUpload chatId={selectedChat._id} />
+            <a href="http://localhost:7000/index.html" target="_blank" rel="noopener noreferrer">
+  <Button>
+    Send file
+              </Button>
+              </a>
+              <a href="http://localhost:7000/receiver.html" target="_blank" rel="noopener noreferrer">
+  <Button>
+    Receive File 
+              </Button>
+</a>            {/*file upload*/}
           </Box>
         </>
       ) : (
