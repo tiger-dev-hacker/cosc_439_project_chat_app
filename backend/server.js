@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === "production") {
     
   console.log("Registering wildcard route: *");
 
-  app.get("/*", (req, res) =>
+  app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
   );
 } else {
