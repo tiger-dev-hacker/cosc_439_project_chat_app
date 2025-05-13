@@ -17,7 +17,7 @@ router.post(
   (req, res, next) => {
     upload.single("file")(req, res, (err) => {
       if (err) {
-        console.error("❌ Multer or Cloudinary error:", err);
+        console.error("Multer or Cloudinary error:", err);
         return res.status(500).json({ error: "Upload middleware failed", details: err.message });
       }
       next();
