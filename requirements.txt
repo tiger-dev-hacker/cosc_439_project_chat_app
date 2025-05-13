@@ -2,7 +2,7 @@
 requirements 
 Node version v22.15.0
 
-backend
+1. For backend
 bcryptjs@3.0.2
 ├── cloudinary@1.41.3
 ├── colors@1.4.0
@@ -17,7 +17,9 @@ bcryptjs@3.0.2
 ├── multer@1.4.5-lts.2
 ├── nodemon@3.1.10
 └── socket.io@4.8.1
-frontend
+
+
+2. For frontend
 
 ── @chakra-ui/icons@2.2.4
 ├── @chakra-ui/react@2.10.7
