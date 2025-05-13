@@ -9,7 +9,6 @@ import {
     ModalCloseButton,
     Button,
     useDisclosure,
-    Text,
     useToast,
     Input,
     FormControl,

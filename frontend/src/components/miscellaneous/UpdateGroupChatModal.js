@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, useDisclosure, useToast, Box, FormControl, Input, Spinner } from '@chakra-ui/react';
+import { Button, IconButton, useDisclosure, useToast, Box, FormControl, Input, Spinner } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import {
     Modal,

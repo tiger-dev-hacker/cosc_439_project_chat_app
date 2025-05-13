@@ -38,8 +38,6 @@ import UserListItem from "../UserAvatar/UserListItem";
     const {
         setSelectedChat,
         user,
-        notification,
-        setNotification,
         chats,
         setChats,
       } = ChatState();

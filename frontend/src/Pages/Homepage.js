@@ -1,4 +1,4 @@
-import { Box, color, Container, Tab, Tabs, TabList, TabPanel, TabPanels, Text } from '@chakra-ui/react';
+import { Box, Container, Tab, Tabs, TabList, TabPanel, TabPanels, Text } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import Login from '../components/ui/Authentication/Login';
 import Signup from '../components/ui/Authentication/Signup';
